@@ -14,3 +14,7 @@ Getting bowl
 Adding cereal
 Adding milk
 ```
+
+To run in parallel, run
+1. `npm run start.watch` to start the Worker.
+1. In another shell, `npm run workflow --parallel-compensations` to run the Workflow Client.

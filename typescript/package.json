@@ -24,7 +24,8 @@
     "@temporalio/client": "1.7.0",
     "@temporalio/worker": "1.7.0",
     "@temporalio/workflow": "1.7.0",
-    "nanoid": "3.x"
+    "nanoid": "3.x",
+    "commander": "10.0.1" 
   },
   "devDependencies": {
     "@tsconfig/node18": "^1.0.0",
