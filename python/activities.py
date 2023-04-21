@@ -1,5 +1,7 @@
 from temporalio import activity
 
+# To introduce a failure, add an Exception in one of these methods.
+
 
 @activity.defn
 async def get_bowl() -> None:

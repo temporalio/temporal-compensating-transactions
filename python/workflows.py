@@ -1,6 +1,6 @@
 from datetime import timedelta
 from temporalio import workflow
-from temporalio.exceptions import ActivityError, CancelledError
+from temporalio.common import RetryPolicy
 import asyncio
 import typing
 
@@ -12,6 +12,10 @@ with workflow.unsafe.imports_passed_through():
         put_cereal_back_in_box,
         add_milk,
     )
+
+# Trying only once to illustrate compensations easily when activities fail.
+common_retry_policy = RetryPolicy(maximum_attempts=1)
+time_delta = timedelta(seconds=5)
 
 
 class Compensations:
@@ -28,14 +32,28 @@ class Compensations:
 
     async def compensate(self):
         if self.parallel_compensations:
-            try:
-                await asyncio.gather(self.compensations, return_exceptions=True)
-            except Exception as e:
-                print("failed to compensate: %s" % e)
+
+            def compensation_lambda(f):
+                return workflow.execute_activity(
+                    f,
+                    start_to_close_timeout=time_delta,
+                    retry_policy=common_retry_policy,
+                )
+
+            all_compensations = [compensation_lambda(c) for c in self.compensations]
+            results = await asyncio.gather(*all_compensations, return_exceptions=True)
+            for result in results:
+                if isinstance(result, Exception):
+                    print("failed to compensate: %s" % e)
+
         else:
             for f in reversed(self.compensations):
                 try:
-                    await f()
+                    await workflow.execute_activity(
+                        f,
+                        start_to_close_timeout=time_delta,
+                        retry_policy=common_retry_policy,
+                    )
                 except Exception as e:
                     print("failed to compensate: %s" % e)
 
@@ -43,19 +61,25 @@ class Compensations:
 @workflow.defn
 class BreakfastWorkflow:
     @workflow.run
-    async def run(self) -> None:
-        compensations = Compensations()
+    async def run(self, parallel_compensations=False) -> None:
+        compensations = Compensations(parallel_compensations=parallel_compensations)
         try:
             await workflow.execute_activity(
-                get_bowl, start_to_close_timeout=timedelta(seconds=5)
+                get_bowl,
+                start_to_close_timeout=time_delta,
+                retry_policy=common_retry_policy,
             )
             compensations += put_bowl_away
             await workflow.execute_activity(
-                add_cereal, start_to_close_timeout=timedelta(seconds=5)
+                add_cereal,
+                start_to_close_timeout=time_delta,
+                retry_policy=common_retry_policy,
             )
             compensations += put_cereal_back_in_box
             await workflow.execute_activity(
-                add_milk, start_to_close_timeout=timedelta(seconds=5)
+                add_milk,
+                start_to_close_timeout=time_delta,
+                retry_policy=common_retry_policy,
             )
         except Exception:
             task = asyncio.create_task(compensations.compensate())

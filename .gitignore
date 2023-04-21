@@ -2,3 +2,5 @@
 java/.gradle
 java/build/*
 java/bin
+.idea
+.vscode
