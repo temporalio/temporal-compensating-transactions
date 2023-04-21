@@ -1,10 +1,10 @@
 package app
 
 import (
+	"log"
 	"time"
 
 	"go.temporal.io/sdk/workflow"
-	"go.uber.org/multierr"
 )
 
 func BreakfastWorkflow(ctx workflow.Context) (err error) {
@@ -21,8 +21,12 @@ func BreakfastWorkflow(ctx workflow.Context) (err error) {
 
 	defer func() {
 		if err != nil {
-			errCompensation := workflow.ExecuteActivity(ctx, PutBowlAway).Get(ctx, nil)
-			err = multierr.Append(err, errCompensation)
+			// activity failed, and workflow context is canceled
+			disconnectedCtx, _ := workflow.NewDisconnectedContext(ctx)
+			errCompensation := workflow.ExecuteActivity(disconnectedCtx, PutBowlAway).Get(ctx, nil)
+			if err != nil {
+				log.Println("Executing bowl compensation failed", errCompensation)
+			}
 		}
 	}()
 
@@ -33,8 +37,11 @@ func BreakfastWorkflow(ctx workflow.Context) (err error) {
 
 	defer func() {
 		if err != nil {
-			errCompensation := workflow.ExecuteActivity(ctx, PutCerealBackInBox).Get(ctx, nil)
-			err = multierr.Append(err, errCompensation)
+			disconnectedCtx, _ := workflow.NewDisconnectedContext(ctx)
+			errCompensation := workflow.ExecuteActivity(disconnectedCtx, PutCerealBackInBox).Get(ctx, nil)
+			if err != nil {
+				log.Println("Executing cereal compensation failed", errCompensation)
+			}
 		}
 	}()
 

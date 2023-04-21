@@ -1,7 +1,7 @@
 package main
 
 import (
-	"hello-world-temporal/app"
+	"breakfast/app"
 	"log"
 
 	"go.temporal.io/sdk/client"
