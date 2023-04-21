@@ -4,12 +4,14 @@ import (
 	"log"
 	"time"
 
+	"go.temporal.io/sdk/temporal"
 	"go.temporal.io/sdk/workflow"
 )
 
 func BreakfastWorkflow(ctx workflow.Context) (err error) {
 	options := workflow.ActivityOptions{
 		StartToCloseTimeout: time.Second * 5,
+		RetryPolicy:         &temporal.RetryPolicy{MaximumAttempts: 1},
 	}
 
 	ctx = workflow.WithActivityOptions(ctx, options)
@@ -24,7 +26,7 @@ func BreakfastWorkflow(ctx workflow.Context) (err error) {
 			// activity failed, and workflow context is canceled
 			disconnectedCtx, _ := workflow.NewDisconnectedContext(ctx)
 			errCompensation := workflow.ExecuteActivity(disconnectedCtx, PutBowlAway).Get(ctx, nil)
-			if err != nil {
+			if errCompensation != nil {
 				log.Println("Executing bowl compensation failed", errCompensation)
 			}
 		}
@@ -39,7 +41,7 @@ func BreakfastWorkflow(ctx workflow.Context) (err error) {
 		if err != nil {
 			disconnectedCtx, _ := workflow.NewDisconnectedContext(ctx)
 			errCompensation := workflow.ExecuteActivity(disconnectedCtx, PutCerealBackInBox).Get(ctx, nil)
-			if err != nil {
+			if errCompensation != nil {
 				log.Println("Executing cereal compensation failed", errCompensation)
 			}
 		}

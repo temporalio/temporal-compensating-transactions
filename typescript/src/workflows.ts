@@ -4,7 +4,8 @@ import * as activities from './activities'
 
 const { getBowl, putBowlAway, addCereal, putCerealBackInBox, addMilk } =
  proxyActivities<typeof activities>({
-   startToCloseTimeout: '1 minute'
+   startToCloseTimeout: '1 minute',
+   retry: {maximumAttempts: 1}
  })
 
 type Compensation = () => Promise<void>

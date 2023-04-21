@@ -16,4 +16,5 @@ export async function putCerealBackInBox() : Promise<void> {
 
 export async function addMilk(): Promise<void> {
   console.log("Adding milk");
+  throw new Error("This is an example exception.");
 }

@@ -4,22 +4,32 @@ import (
 	"log"
 	"time"
 
+	"go.temporal.io/sdk/temporal"
 	"go.temporal.io/sdk/workflow"
 )
+
+// A type with the compensations and their "disconnected contexts",
+// which are distinct from the standard workflow.Contexts to protect
+// against cancellation.
+type FutureWithContext struct {
+	context workflow.Context
+	future  workflow.Future
+}
 
 func BreakfastWorkflowParallel(ctx workflow.Context) (err error) {
 	options := workflow.ActivityOptions{
 		StartToCloseTimeout: time.Second * 5,
+		RetryPolicy:         &temporal.RetryPolicy{MaximumAttempts: 1},
 	}
 
 	ctx = workflow.WithActivityOptions(ctx, options)
-	var pendingFutures []workflow.Future
+	var pendingFutures []FutureWithContext
 
 	defer func() error {
 		// Run compensations last, if we encounter errors in normal execution.
 		if err != nil {
-			for _, future := range pendingFutures {
-				if err := future.Get(ctx, nil); err != nil {
+			for _, pending := range pendingFutures {
+				if err := pending.future.Get(pending.context, nil); err != nil {
 					log.Println("Executing compensation failed", err)
 				}
 			}
@@ -34,8 +44,9 @@ func BreakfastWorkflowParallel(ctx workflow.Context) (err error) {
 
 	defer func() {
 		if err != nil {
-			f := workflow.ExecuteActivity(ctx, PutBowlAway)
-			pendingFutures = append(pendingFutures, f)
+			disconnectedCtx, _ := workflow.NewDisconnectedContext(ctx)
+			f := workflow.ExecuteActivity(disconnectedCtx, PutBowlAway)
+			pendingFutures = append(pendingFutures, FutureWithContext{disconnectedCtx, f})
 		}
 	}()
 
@@ -46,8 +57,9 @@ func BreakfastWorkflowParallel(ctx workflow.Context) (err error) {
 
 	defer func() {
 		if err != nil {
-			f := workflow.ExecuteActivity(ctx, PutCerealBackInBox)
-			pendingFutures = append(pendingFutures, f)
+			disconnectedCtx, _ := workflow.NewDisconnectedContext(ctx)
+			f := workflow.ExecuteActivity(disconnectedCtx, PutCerealBackInBox)
+			pendingFutures = append(pendingFutures, FutureWithContext{disconnectedCtx, f})
 		}
 	}()
 
