@@ -34,7 +34,7 @@ func main() {
 	}
 
 	if err != nil {
-		log.Fatalln("unable to complete Workflow", err)
+		log.Fatalln("unable to start Workflow", err)
 	}
 
 	// Check for errors
