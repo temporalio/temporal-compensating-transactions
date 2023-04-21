@@ -9,11 +9,11 @@ async def main():
     client = await Client.connect("localhost:7233")
 
     # Execute a workflow
-    result = await client.execute_workflow(
+    await client.execute_workflow(
         BreakfastWorkflow.run, id="breakfast-workflow", task_queue="breakfast-queue"
     )
 
-    print(f"Result: {result}")
+    print("Started workflow")
 
 
 if __name__ == "__main__":

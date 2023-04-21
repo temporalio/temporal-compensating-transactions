@@ -19,10 +19,10 @@ class Compensations:
         self.parallel_compensations = parallel_compensations
         self.compensations = []
 
-    def add(self, function: typing.Awaitable):
+    def add(self, function: typing.Callable[..., typing.Awaitable[None]]):
         self.compensations.append(function)
 
-    def __iadd__(self, function: typing.Awaitable):
+    def __iadd__(self, function: typing.Callable[..., typing.Awaitable[None]]):
         self.add(function)
         return self
 
@@ -57,7 +57,7 @@ class BreakfastWorkflow:
             await workflow.execute_activity(
                 add_milk, start_to_close_timeout=timedelta(seconds=5)
             )
-        except (ActivityError, CancelledError):
+        except Exception:
             task = asyncio.create_task(compensations.compensate())
             # Ensure the compensations run in the face of cancelation.
             await asyncio.shield(task)
