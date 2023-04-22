@@ -1,6 +1,5 @@
 package breakfastapp;
 
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -42,9 +41,14 @@ public class RecipeCreatorGenerationWorkflowTest {
                 .setTaskQueue(Shared.BREAKFAST_TASK_QUEUE)
                 .build();
         BreakfastWorkflow workflow = workflowClient.newWorkflowStub(BreakfastWorkflow.class, options);
-        workflow.makeBreakfast();
+        workflow.makeBreakfast(false);
         verify(breakfast).getBowl();
         verify(breakfast).addCereal();
         verify(breakfast).addMilk();
+        workflow.makeBreakfast(true);
+        verify(breakfast).getBowl();
+        verify(breakfast).addCereal();
+        verify(breakfast).addMilk();
+
     }
 }

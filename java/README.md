@@ -30,3 +30,11 @@ run:
 ```
 
 It will continue to run, looking for more work, until you explicitly kill it.
+
+## Run the workflow in parallel
+
+Run:
+```
+./gradlew startWorker --console=plain
+./gradlew initiateGeneration --args='--parallel-compensations'
+```

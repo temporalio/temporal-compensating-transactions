@@ -12,9 +12,7 @@ public class BreakfastWorkflowImpl implements BreakfastWorkflow {
     // fail.
     private final RetryOptions retryoptions = RetryOptions.newBuilder()
             .setInitialInterval(Duration.ofSeconds(1))
-            .setMaximumInterval(Duration.ofSeconds(100))
-            .setBackoffCoefficient(2)
-            .setMaximumAttempts(500)
+            .setMaximumAttempts(1)
             .build();
     private final ActivityOptions defaultActivityOptions = ActivityOptions.newBuilder()
             .setStartToCloseTimeout(Duration.ofSeconds(5))
@@ -27,9 +25,9 @@ public class BreakfastWorkflowImpl implements BreakfastWorkflow {
     // Activity method executions can be orchestrated here or from within other
     // Activity methods.
     @Override
-    public void makeBreakfast() {
+    public void makeBreakfast(boolean parallelCompensations) {
         // You can set parallel compensations if appropriate with the Builder
-        Saga saga = new Saga(new Saga.Options.Builder().build());
+        Saga saga = new Saga(new Saga.Options.Builder().setParallelCompensation(parallelCompensations).build());
         try {
             breakfastActivity.getBowl();
             saga.addCompensation(breakfastActivity::putBowlAway);
