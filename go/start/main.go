@@ -26,11 +26,7 @@ func main() {
 	// Start the Workflow
 	parallelCompensationsPtr := flag.Bool("parallel-compensations", false, "Execute compensations in parallel if possible.")
 	flag.Parse()
-	if !*parallelCompensationsPtr {
-		_, err = c.ExecuteWorkflow(context.Background(), options, app.BreakfastWorkflow)
-	} else {
-		_, err = c.ExecuteWorkflow(context.Background(), options, app.BreakfastWorkflowParallel)
-	}
+	_, err = c.ExecuteWorkflow(context.Background(), options, app.BreakfastWorkflow, *parallelCompensationsPtr)
 
 	if err != nil {
 		log.Fatalln("unable to start Workflow", err)

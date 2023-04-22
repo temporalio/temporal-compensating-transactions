@@ -2,6 +2,7 @@ package app
 
 import (
 	"context"
+	"errors"
 	"fmt"
 )
 
@@ -27,5 +28,5 @@ func PutCerealBackInBox(ctx context.Context) error {
 
 func AddMilk(ctx context.Context) error {
 	fmt.Println("Adding milk")
-	return nil
+	return errors.New("can't work with 42")
 }
