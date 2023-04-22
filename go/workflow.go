@@ -1,7 +1,6 @@
 package app
 
 import (
-	"log"
 	"time"
 
 	"go.temporal.io/sdk/temporal"
@@ -32,20 +31,12 @@ func BreakfastWorkflow(ctx workflow.Context, parallel_compensations bool) (err e
 
 	err = workflow.ExecuteActivity(ctx, AddMilk).Get(ctx, nil)
 
-	log.Println("just before")
-	log.Println(err)
-
-	defer func() (err error) {
-		log.Println("in the compensation func")
-		log.Println(err)
+	defer func() {
 		if err != nil {
-			log.Println("3333333")
-
 			// activity failed, and workflow context is canceled
 			disconnectedCtx, _ := workflow.NewDisconnectedContext(ctx)
 			compensations.Compensate(disconnectedCtx, parallel_compensations)
 		}
-		return err
 	}()
 
 	return err
