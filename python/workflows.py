@@ -44,24 +44,24 @@ class Compensations:
             results = await asyncio.gather(*all_compensations, return_exceptions=True)
             for result in results:
                 if isinstance(result, Exception):
-                    print("failed to compensate: %s" % e)
+                    workflow.logger("failed to compensate: %s" % result)
 
         else:
             for f in reversed(self.compensations):
                 try:
                     await workflow.execute_activity(
                         f,
-                        start_to_close_timeout=time_delta,
+                        start_to_close_timeout=time_delta, 
                         retry_policy=common_retry_policy,
                     )
                 except Exception as e:
-                    print("failed to compensate: %s" % e)
+                    workflow.logger("failed to compensate: %s" % result)
 
 
 @workflow.defn
 class BreakfastWorkflow:
     @workflow.run
-    async def run(self, parallel_compensations=False) -> None:
+    async def run(self, parallel_compensations) -> None:
         compensations = Compensations(parallel_compensations=parallel_compensations)
         try:
             await workflow.execute_activity(

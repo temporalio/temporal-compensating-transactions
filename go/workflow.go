@@ -17,6 +17,15 @@ func BreakfastWorkflow(ctx workflow.Context, parallel_compensations bool) (err e
 
 	var compensations Compensations
 
+	defer func() {
+		// Defer is at the top so that it is executed regardless of which step might fail.
+		if err != nil {
+			// activity failed, and workflow context is canceled
+			disconnectedCtx, _ := workflow.NewDisconnectedContext(ctx)
+			compensations.Compensate(disconnectedCtx, parallel_compensations)
+		}
+	}()
+
 	err = workflow.ExecuteActivity(ctx, GetBowl).Get(ctx, nil)
 	compensations.AddCompensation(PutBowlAway)
 	if err != nil {
@@ -30,14 +39,6 @@ func BreakfastWorkflow(ctx workflow.Context, parallel_compensations bool) (err e
 	}
 
 	err = workflow.ExecuteActivity(ctx, AddMilk).Get(ctx, nil)
-
-	defer func() {
-		if err != nil {
-			// activity failed, and workflow context is canceled
-			disconnectedCtx, _ := workflow.NewDisconnectedContext(ctx)
-			compensations.Compensate(disconnectedCtx, parallel_compensations)
-		}
-	}()
 
 	return err
 }

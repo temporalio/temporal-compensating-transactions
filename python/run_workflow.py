@@ -17,7 +17,7 @@ async def main():
         BreakfastWorkflow.run, args.parallel, id="breakfast-workflow", task_queue="breakfast-queue"
     )
 
-    print("Started workflow")
+    print("Executed workflow")
 
 
 if __name__ == "__main__":
