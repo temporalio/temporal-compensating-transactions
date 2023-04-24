@@ -41,7 +41,7 @@ class Compensations:
                 )
 
             all_compensations = [compensation_lambda(c) for c in self.compensations]
-            results = await asyncio.gather(*all_compensations, return_exceptions=True)
+            results = await asyncio.gather(*all_compensations)
             for result in results:
                 if isinstance(result, Exception):
                     workflow.logger("failed to compensate: %s" % result)
@@ -51,7 +51,7 @@ class Compensations:
                 try:
                     await workflow.execute_activity(
                         f,
-                        start_to_close_timeout=time_delta, 
+                        start_to_close_timeout=time_delta,
                         retry_policy=common_retry_policy,
                     )
                 except Exception as e:
