@@ -28,13 +28,7 @@ export async function breakfastWorkflow(compensateInParallel = false): Promise<v
 
 async function compensate(compensations: Compensation[], compensateInParallel = false) {
   if (compensateInParallel) {
-    const outcomes = await Promise.allSettled(compensations.map(comp => comp()))
-    for (const outcome of outcomes) {
-      if (outcome.status === 'rejected') {
-        console.error(`failed to compensate: ${outcome.reason.message}`)
-      }
-    }
-    return
+    compensations.map(comp => comp().catch(err => console.error(`failed to compensate: $error`)))
   }
 
 

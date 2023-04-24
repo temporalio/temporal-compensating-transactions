@@ -33,6 +33,8 @@ class Compensations:
     async def compensate(self):
         if self.parallel_compensations:
 
+            # Mini function separated out here purely for readability of the list 
+            # comprehension below.
             def compensation_lambda(f):
                 return workflow.execute_activity(
                     f,
