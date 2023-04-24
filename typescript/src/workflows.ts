@@ -1,5 +1,7 @@
 import { proxyActivities } from '@temporalio/workflow'
 import * as activities from './activities'
+import {Compensation, compensate} from './compensations'
+
 
 
 const { getBowl, putBowlAway, addCereal, putCerealBackInBox, addMilk } =
@@ -7,8 +9,6 @@ const { getBowl, putBowlAway, addCereal, putCerealBackInBox, addMilk } =
     startToCloseTimeout: '1 minute',
     retry: { maximumAttempts: 1 }
   })
-
-type Compensation = () => Promise<void>
 
 export async function breakfastWorkflow(compensateInParallel = false): Promise<void> {
   const compensations: Compensation[] = []
@@ -22,21 +22,5 @@ export async function breakfastWorkflow(compensateInParallel = false): Promise<v
   } catch (err) {
     await compensate(compensations, compensateInParallel)
     throw err
-  }
-}
-
-
-async function compensate(compensations: Compensation[], compensateInParallel = false) {
-  if (compensateInParallel) {
-    compensations.map(comp => comp().catch(err => console.error(`failed to compensate: $error`)))
-  }
-
-
-  for (const comp of compensations) {
-    try {
-      await comp()
-    } catch (err) {
-      console.error(`failed to compensate: ${err}`)
-    }
   }
 }
