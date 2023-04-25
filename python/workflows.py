@@ -33,19 +33,15 @@ class Compensations:
     async def compensate(self):
         if self.parallel_compensations:
 
-            def compensation_lambda(compensation):
-                task = asyncio.create_task(workflow.execute_activity(
-                    compensation,
-                    start_to_close_timeout=time_delta,
-                    retry_policy=common_retry_policy,
-                ))
-
-                def err_callback(task):
-                    if task.error():
-                        workflow.logger("Failed to compensate: %s" % task.error())
-                # Used low-level API so that errors are returned as they are encountered.
-                task.add_done_callback(err_callback) 
-                return task
+            async def run_compensation(compensation: typing.Callable[..., typing.Awaitable[None]]) -> None:
+                try:
+                    await workflow.execute_activity(
+                        compensation,
+                        start_to_close_timeout=time_delta,
+                        retry_policy=common_retry_policy,
+                    ))
+                except Exception as e:
+                    workflow.logger.exception("failed to compensate")
 
             all_compensations = [compensation_lambda(c) for c in self.compensations]
             await asyncio.gather(*all_compensations)
