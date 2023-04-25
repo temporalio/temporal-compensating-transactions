@@ -59,7 +59,7 @@ class Compensations:
                         retry_policy=common_retry_policy,
                     )
                 except Exception as e:
-                    workflow.logger("failed to compensate: %s" % e)
+                    workflow.logger.exception("failed to compensate")
 
 
 @workflow.defn
