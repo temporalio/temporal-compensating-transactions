@@ -31,31 +31,22 @@ class Compensations:
         return self
 
     async def compensate(self):
-        if self.parallel_compensations:
-
-            async def run_compensation(compensation: typing.Callable[..., typing.Awaitable[None]]) -> None:
+        async def run_compensation(compensation: typing.Callable[..., typing.Awaitable[None]]) -> None:
                 try:
                     await workflow.execute_activity(
                         compensation,
                         start_to_close_timeout=time_delta,
                         retry_policy=common_retry_policy,
-                    ))
+                    )
                 except Exception as e:
                     workflow.logger.exception("failed to compensate")
-
-            all_compensations = [compensation_lambda(c) for c in self.compensations]
+        if self.parallel_compensations:
+            all_compensations = [run_compensation(c) for c in self.compensations]
             await asyncio.gather(*all_compensations)
 
         else:
             for f in reversed(self.compensations):
-                try:
-                    await workflow.execute_activity(
-                        f,
-                        start_to_close_timeout=time_delta,
-                        retry_policy=common_retry_policy,
-                    )
-                except Exception as e:
-                    workflow.logger.exception("failed to compensate")
+                await run_compensation(f)
 
 
 @workflow.defn
