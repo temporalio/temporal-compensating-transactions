@@ -17,7 +17,7 @@ func (s Compensations) Compensate(ctx workflow.Context, inParallel bool) {
 		for i := len(s) - 1; i >= 0; i-- {
 			errCompensation := workflow.ExecuteActivity(ctx, s[i]).Get(ctx, nil)
 			if errCompensation != nil {
-				workflow.GetLogger(ctx).Error("Executing compensation failed", errCompensation)
+				workflow.GetLogger(ctx).Error("Executing compensation failed", "Error", errCompensation)
 			}
 		}
 	} else {
