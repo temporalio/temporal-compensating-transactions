@@ -7,7 +7,7 @@ import (
 	"go.temporal.io/sdk/workflow"
 )
 
-func BreakfastWorkflow(ctx workflow.Context, parallel_compensations bool) (err error) {
+func BreakfastWorkflow(ctx workflow.Context, parallelCompensations bool) (err error) {
 	options := workflow.ActivityOptions{
 		StartToCloseTimeout: time.Second * 5,
 		RetryPolicy:         &temporal.RetryPolicy{MaximumAttempts: 1},
@@ -22,7 +22,7 @@ func BreakfastWorkflow(ctx workflow.Context, parallel_compensations bool) (err e
 		if err != nil {
 			// activity failed, and workflow context is canceled
 			disconnectedCtx, _ := workflow.NewDisconnectedContext(ctx)
-			compensations.Compensate(disconnectedCtx, parallel_compensations)
+			compensations.Compensate(disconnectedCtx, parallelCompensations)
 		}
 	}()
 
