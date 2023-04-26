@@ -38,7 +38,7 @@ class Compensations:
                         start_to_close_timeout=time_delta,
                         retry_policy=common_retry_policy,
                     )
-                except Exception as e:
+                except:
                     workflow.logger.exception("failed to compensate")
         if self.parallel_compensations:
             all_compensations = [run_compensation(c) for c in self.compensations]
