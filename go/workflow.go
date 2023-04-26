@@ -3,45 +3,42 @@ package app
 import (
 	"time"
 
+	"go.temporal.io/sdk/temporal"
 	"go.temporal.io/sdk/workflow"
-	"go.uber.org/multierr"
 )
 
-func BreakfastWorkflow(ctx workflow.Context) (err error) {
+func BreakfastWorkflow(ctx workflow.Context, parallelCompensations bool) (err error) {
 	options := workflow.ActivityOptions{
 		StartToCloseTimeout: time.Second * 5,
+		RetryPolicy:         &temporal.RetryPolicy{MaximumAttempts: 1},
 	}
 
 	ctx = workflow.WithActivityOptions(ctx, options)
 
+	var compensations Compensations
+
+	defer func() {
+		// Defer is at the top so that it is executed regardless of which step might fail.
+		if err != nil {
+			// activity failed, and workflow context is canceled
+			disconnectedCtx, _ := workflow.NewDisconnectedContext(ctx)
+			compensations.Compensate(disconnectedCtx, parallelCompensations)
+		}
+	}()
+
 	err = workflow.ExecuteActivity(ctx, GetBowl).Get(ctx, nil)
+	compensations.AddCompensation(PutBowlAway)
 	if err != nil {
 		return err
 	}
-
-	defer func() {
-		if err != nil {
-			errCompensation := workflow.ExecuteActivity(ctx, PutBowlAway).Get(ctx, nil)
-			err = multierr.Append(err, errCompensation)
-		}
-	}()
 
 	err = workflow.ExecuteActivity(ctx, AddCereal).Get(ctx, nil)
+	compensations.AddCompensation(PutCerealBackInBox)
 	if err != nil {
 		return err
 	}
-
-	defer func() {
-		if err != nil {
-			errCompensation := workflow.ExecuteActivity(ctx, PutCerealBackInBox).Get(ctx, nil)
-			err = multierr.Append(err, errCompensation)
-		}
-	}()
 
 	err = workflow.ExecuteActivity(ctx, AddMilk).Get(ctx, nil)
-	if err != nil {
-		return err
-	}
 
-	return nil
+	return err
 }

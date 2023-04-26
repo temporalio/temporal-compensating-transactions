@@ -1,7 +1,7 @@
 package main
 
 import (
-	"hello-world-temporal/app"
+	"breakfast/app"
 	"log"
 
 	"go.temporal.io/sdk/client"
@@ -19,7 +19,6 @@ func main() {
 	// This worker hosts both Workflow and Activity functions
 	w := worker.New(c, app.BreakfastTaskQueue, worker.Options{})
 	w.RegisterWorkflow(app.BreakfastWorkflow)
-	w.RegisterWorkflow(app.BreakfastWorkflowParallel)
 
 	w.RegisterActivity(app.GetBowl)
 	w.RegisterActivity(app.PutBowlAway)

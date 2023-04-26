@@ -23,3 +23,9 @@ Run the worker and starter included in the project.
 python run_worker.py
 python run_workflow.py
 ```
+
+To run with the parallel compensations instead, pass the `--parallel-compensations` flag:
+```bash
+python run_worker.py
+python run_workflow.py --parallel-compensations
+```

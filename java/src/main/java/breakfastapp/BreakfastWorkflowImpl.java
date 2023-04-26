@@ -7,34 +7,27 @@ import io.temporal.workflow.Saga;
 import io.temporal.common.RetryOptions;
 
 import java.time.Duration;
-import java.util.HashMap;
-import java.util.Map;
-
 public class BreakfastWorkflowImpl implements BreakfastWorkflow {
-    private static final String BREAKFAST = "breakast";
-    // RetryOptions specify how to automatically handle retries when Activities fail.
+    // RetryOptions specify how to automatically handle retries when Activities
+    // fail.
     private final RetryOptions retryoptions = RetryOptions.newBuilder()
             .setInitialInterval(Duration.ofSeconds(1))
-            .setMaximumInterval(Duration.ofSeconds(100))
-            .setBackoffCoefficient(2)
-            .setMaximumAttempts(500)
+            .setMaximumAttempts(1)
             .build();
     private final ActivityOptions defaultActivityOptions = ActivityOptions.newBuilder()
             .setStartToCloseTimeout(Duration.ofSeconds(5))
             .setRetryOptions(retryoptions)
             .build();
-    // ActivityStubs enable calls to methods as if the Activity object is local, but actually perform an RPC.
-    private final Map<String, ActivityOptions> perActivityMethodOptions = new HashMap<String, ActivityOptions>() {{
-        put(BREAKFAST, ActivityOptions.newBuilder().setHeartbeatTimeout(Duration.ofSeconds(5)).build());
-    }};
-    private final BreakfastActivity breakfastActivity = Workflow.newActivityStub(BreakfastActivity.class, defaultActivityOptions, perActivityMethodOptions);
+    private final BreakfastActivity breakfastActivity = Workflow.newActivityStub(BreakfastActivity.class,
+            defaultActivityOptions);
 
     // The transfer method is the entry point to the Workflow.
-    // Activity method executions can be orchestrated here or from within other Activity methods.
+    // Activity method executions can be orchestrated here or from within other
+    // Activity methods.
     @Override
-    public void makeBreakfast() {
+    public void makeBreakfast(boolean parallelCompensations) {
         // You can set parallel compensations if appropriate with the Builder
-        Saga saga = new Saga(new Saga.Options.Builder().build());
+        Saga saga = new Saga(new Saga.Options.Builder().setParallelCompensation(parallelCompensations).build());
         try {
             breakfastActivity.getBowl();
             saga.addCompensation(breakfastActivity::putBowlAway);
