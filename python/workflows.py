@@ -58,18 +58,18 @@ class BreakfastWorkflow:
     async def run(self, parallel_compensations) -> None:
         compensations = Compensations(parallel_compensations=parallel_compensations)
         try:
+            compensations += put_bowl_away
             await workflow.execute_activity(
                 get_bowl,
                 start_to_close_timeout=time_delta,
                 retry_policy=common_retry_policy,
             )
-            compensations += put_bowl_away
+            compensations += put_cereal_back_in_box
             await workflow.execute_activity(
                 add_cereal,
                 start_to_close_timeout=time_delta,
                 retry_policy=common_retry_policy,
             )
-            compensations += put_cereal_back_in_box
             await workflow.execute_activity(
                 add_milk,
                 start_to_close_timeout=time_delta,
