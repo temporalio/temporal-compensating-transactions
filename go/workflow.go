@@ -27,16 +27,16 @@ func BreakfastWorkflow(ctx workflow.Context, parallelCompensations bool) (err er
 	}()
 
 	err = workflow.ExecuteActivity(ctx, GetBowl).Get(ctx, nil)
-	compensations.AddCompensation(PutBowlAway)
 	if err != nil {
 		return err
 	}
+	compensations.AddCompensation(PutBowlAway)
 
 	err = workflow.ExecuteActivity(ctx, AddCereal).Get(ctx, nil)
-	compensations.AddCompensation(PutCerealBackInBox)
 	if err != nil {
 		return err
 	}
+	compensations.AddCompensation(PutCerealBackInBox)
 
 	err = workflow.ExecuteActivity(ctx, AddMilk).Get(ctx, nil)
 
