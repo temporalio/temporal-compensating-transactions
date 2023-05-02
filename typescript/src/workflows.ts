@@ -13,11 +13,10 @@ const { getBowl, putBowlAway, addCereal, putCerealBackInBox, addMilk } =
 export async function breakfastWorkflow(compensateInParallel = false): Promise<void> {
   const compensations: Compensation[] = []
   try {
-    await getBowl()
     compensations.unshift(putBowlAway)
-    await addCereal()
+    await getBowl()
     compensations.unshift(putCerealBackInBox)
-
+    await addCereal()
     await addMilk()
   } catch (err) {
     await compensate(compensations, compensateInParallel)
