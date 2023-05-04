@@ -6,9 +6,9 @@ from temporalio.worker import Worker
 
 from activities import (
     get_bowl,
-    put_bowl_away,
+    put_bowl_away_if_present,
     add_cereal,
-    put_cereal_back_in_box,
+    put_cereal_back_in_box_if_present,
     add_milk,
 )
 from workflows import BreakfastWorkflow
@@ -23,9 +23,9 @@ async def main():
         workflows=[BreakfastWorkflow],
         activities=[
             get_bowl,
-            put_bowl_away,
+            put_bowl_away_if_present,
             add_cereal,
-            put_cereal_back_in_box,
+            put_cereal_back_in_box_if_present,
             add_milk,
         ],
     )

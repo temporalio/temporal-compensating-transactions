@@ -10,8 +10,8 @@ func GetBowl(ctx context.Context) error {
 	return nil
 }
 
-func PutBowlAway(ctx context.Context) error {
-	fmt.Println("Putting bowl away")
+func PutBowlAwayIfPresent(ctx context.Context) error {
+	fmt.Println("Putting bowl away if bowl is out")
 	return nil
 }
 
@@ -20,8 +20,8 @@ func AddCereal(ctx context.Context) error {
 	return nil
 }
 
-func PutCerealBackInBox(ctx context.Context) error {
-	fmt.Println("Putting cereal back in box")
+func PutCerealBackInBoxIfPresent(ctx context.Context) error {
+	fmt.Println("Putting cereal back in box if there is cereal")
 	return nil
 }
 

@@ -7,9 +7,9 @@ import typing
 with workflow.unsafe.imports_passed_through():
     from activities import (
         get_bowl,
-        put_bowl_away,
+        put_bowl_away_if_present,
         add_cereal,
-        put_cereal_back_in_box,
+        put_cereal_back_in_box_if_present,
         add_milk,
     )
 
@@ -58,13 +58,13 @@ class BreakfastWorkflow:
     async def run(self, parallel_compensations) -> None:
         compensations = Compensations(parallel_compensations=parallel_compensations)
         try:
-            compensations += put_bowl_away
+            compensations += put_bowl_away_if_present
             await workflow.execute_activity(
                 get_bowl,
                 start_to_close_timeout=time_delta,
                 retry_policy=common_retry_policy,
             )
-            compensations += put_cereal_back_in_box
+            compensations += put_cereal_back_in_box_if_present
             await workflow.execute_activity(
                 add_cereal,
                 start_to_close_timeout=time_delta,

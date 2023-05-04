@@ -29,9 +29,9 @@ public class BreakfastWorkflowImpl implements BreakfastWorkflow {
         // You can set parallel compensations if appropriate with the Builder
         Saga saga = new Saga(new Saga.Options.Builder().setParallelCompensation(parallelCompensations).build());
         try {
-            saga.addCompensation(breakfastActivity::putBowlAway);
+            saga.addCompensation(breakfastActivity::putBowlAwayIfPresent);
             breakfastActivity.getBowl();
-            saga.addCompensation(breakfastActivity::putCerealBackInBox);
+            saga.addCompensation(breakfastActivity::putCerealBackInBoxIfPresent);
             breakfastActivity.addCereal();
             breakfastActivity.addMilk();
         } catch (ActivityFailure e) {

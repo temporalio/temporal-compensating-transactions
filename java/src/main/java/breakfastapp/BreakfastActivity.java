@@ -9,13 +9,13 @@ public interface BreakfastActivity {
     void getBowl();
 
     @ActivityMethod
-    void putBowlAway();
+    void putBowlAwayIfPresent();
 
     @ActivityMethod
     void addCereal();
 
     @ActivityMethod
-    void putCerealBackInBox();
+    void putCerealBackInBoxIfPresent();
 
     @ActivityMethod
     void addMilk();

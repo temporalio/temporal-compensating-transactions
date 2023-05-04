@@ -4,7 +4,7 @@ import {Compensation, compensate} from './compensations'
 
 
 
-const { getBowl, putBowlAway, addCereal, putCerealBackInBox, addMilk } =
+const { getBowl, putBowlAway: putBowlAwayIfPresent, addCereal, putCerealBackInBox: putCerealBackInBoxIfPresent, addMilk } =
   proxyActivities<typeof activities>({
     startToCloseTimeout: '1 minute',
     retry: { maximumAttempts: 1 }
@@ -13,9 +13,9 @@ const { getBowl, putBowlAway, addCereal, putCerealBackInBox, addMilk } =
 export async function breakfastWorkflow(compensateInParallel = false): Promise<void> {
   const compensations: Compensation[] = []
   try {
-    compensations.unshift(putBowlAway)
+    compensations.unshift(putBowlAwayIfPresent)
     await getBowl()
-    compensations.unshift(putCerealBackInBox)
+    compensations.unshift(putCerealBackInBoxIfPresent)
     await addCereal()
     await addMilk()
   } catch (err) {

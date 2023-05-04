@@ -21,9 +21,9 @@ func main() {
 	w.RegisterWorkflow(app.BreakfastWorkflow)
 
 	w.RegisterActivity(app.GetBowl)
-	w.RegisterActivity(app.PutBowlAway)
+	w.RegisterActivity(app.PutBowlAwayIfPresent)
 	w.RegisterActivity(app.AddCereal)
-	w.RegisterActivity(app.PutCerealBackInBox)
+	w.RegisterActivity(app.PutCerealBackInBoxIfPresent)
 	w.RegisterActivity(app.AddMilk)
 
 	// Start listening to the Task Queue
