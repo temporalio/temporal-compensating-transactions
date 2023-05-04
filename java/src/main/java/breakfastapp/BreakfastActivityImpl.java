@@ -8,8 +8,8 @@ public class BreakfastActivityImpl implements BreakfastActivity {
     }
 
     @Override
-    public void putBowlAway() {
-        System.out.println("Putting bowl away");
+    public void putBowlAwayIfPresent() {
+        System.out.println("Putting bowl away if bowl is out");
     }
 
     @Override
@@ -18,8 +18,8 @@ public class BreakfastActivityImpl implements BreakfastActivity {
     }
 
     @Override
-    public void putCerealBackInBox() {
-        System.out.println("Put cereal back in box");
+    public void putCerealBackInBoxIfPresent() {
+        System.out.println("Put cereal back in box if there is cereal");
     }
 
     @Override

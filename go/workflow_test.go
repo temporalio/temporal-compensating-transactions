@@ -16,9 +16,9 @@ func Test_Workflow(t *testing.T) {
 
 	// Mock activity implementation
 	env.OnActivity(GetBowl, mock.Anything).Return(nil)
-	env.OnActivity(PutBowlAway, mock.Anything).Return(nil)
+	env.OnActivity(PutBowlAwayIfPresent, mock.Anything).Return(nil)
 	env.OnActivity(AddCereal, mock.Anything).Return(nil)
-	env.OnActivity(PutCerealBackInBox, mock.Anything).Return(nil)
+	env.OnActivity(PutCerealBackInBoxIfPresent, mock.Anything).Return(nil)
 	env.OnActivity(AddMilk, mock.Anything).Return(nil)
 
 	env.ExecuteWorkflow(BreakfastWorkflow)

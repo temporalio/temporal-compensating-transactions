@@ -9,8 +9,8 @@ async def get_bowl() -> None:
 
 
 @activity.defn
-async def put_bowl_away() -> None:
-    print("Putting bowl away")
+async def put_bowl_away_if_present() -> None:
+    print("Putting bowl away if bowl is out")
 
 
 @activity.defn
@@ -19,8 +19,8 @@ async def add_cereal() -> None:
 
 
 @activity.defn
-async def put_cereal_back_in_box() -> None:
-    print("Putting cereal back in box")
+async def put_cereal_back_in_box_if_present() -> None:
+    print("Putting cereal back in box if there is cereal")
 
 
 @activity.defn

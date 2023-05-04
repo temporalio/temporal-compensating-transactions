@@ -3,7 +3,7 @@ export async function getBowl(): Promise<void> {
 }
 
 export async function putBowlAway(): Promise<void> {
-  console.log("Putting bowl away");
+  console.log("Putting bowl away if bowl is out");
 }
 
 export async function addCereal(): Promise<void> {
@@ -11,7 +11,7 @@ export async function addCereal(): Promise<void> {
 }
 
 export async function putCerealBackInBox(): Promise<void> {
-  console.log("Putting cereal back in box");
+  console.log("Putting cereal back in box if there is cereal");
 }
 
 export async function addMilk(): Promise<void> {
