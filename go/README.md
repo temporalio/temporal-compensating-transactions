@@ -1,4 +1,4 @@
-# Compensating Transactions: A silly illustration of the this design pattern in Temporal through breakfast
+# Compensating Transactions: A silly illustration of the Saga design pattern in Temporal through breakfast
 
 ## Instructions
 
