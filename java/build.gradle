@@ -15,18 +15,18 @@ repositories {
 }
 
 ext {
-    javaSDKVersion = '1.20.0'
+    javaSDKVersion = '1.31.0'
 }
 
 dependencies {
     // These dependencies are used by the application.
     implementation "io.temporal:temporal-sdk:$javaSDKVersion"
-    implementation "ch.qos.logback:logback-classic:1.2.11"
+    implementation "ch.qos.logback:logback-classic:1.5.20"
 
     // Use JUnit test framework
     testImplementation "io.temporal:temporal-testing:$javaSDKVersion"
     testImplementation "junit:junit:4.13.2"
-    testImplementation "org.mockito:mockito-core:5.1.1"
+    testImplementation "org.mockito:mockito-core:5.20.0"
 }
 
 task initiateGeneration(type: JavaExec) {
